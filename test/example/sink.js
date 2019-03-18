@@ -51,7 +51,7 @@ class Nester extends React.Component {
     }
     return (
       <div>
-        <button onClick={() => this.setState({click: 1})}>Rerender</button>
+        <button onClick={() => this.setState({ click: 1 })}>Rerender</button>
         <Nester depth={depth + 1} />
         <Nester depth={depth + 1} />
       </div>
@@ -85,6 +85,10 @@ class Mounty extends React.Component {
   render() {
     return <h1>{this.props.name} {this.props.val}</h1>;
   }
+}
+
+function Arst() {
+  return <div></div>;
 }
 
 class LotsOfMounts extends React.Component {
@@ -204,9 +208,10 @@ class Sink extends React.Component {
       LotsOfMounts,
       IframeWithMountedChild,
       NestedMountedIframesWithVaryingBorder,
+      Arst,
     };
 
-    var view = Comp => run(View, {Comp});
+    var view = Comp => run(View, { Comp });
 
     return (
       <ul style={styles.sinkList}>
@@ -225,7 +230,7 @@ class Sink extends React.Component {
 class HighlightHover extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {hover: null};
+    this.state = { hover: null };
   }
 
   isMe(evt) {
@@ -237,14 +242,14 @@ class HighlightHover extends React.Component {
     if (!this.isMe(evt)) {
       return;
     }
-    this.setState({hover: true});
+    this.setState({ hover: true });
   }
 
   onOut(evt) {
     if (!this.isMe(evt)) {
       return;
     }
-    this.setState({hover: false});
+    this.setState({ hover: false });
   }
 
   render() {

@@ -11,15 +11,15 @@
 'use strict';
 
 import type Store from './Store';
-import type {ElementID} from './types';
-import type {Theme} from './types';
+import type { ElementID } from './types';
+import type { Theme } from './types';
 
-const {sansSerif} = require('./Themes/Fonts');
+const { sansSerif } = require('./Themes/Fonts');
 const PropTypes = require('prop-types');
 const React = require('react');
 const decorate = require('./decorate');
 
-type BreadcrumbPath = Array<{id: ElementID, node: Object}>;
+type BreadcrumbPath = Array<{ id: ElementID, node: Object }>;
 
 type Props = {
   hover: (string, boolean) => void;
@@ -28,12 +28,12 @@ type Props = {
   select: string => ElementID,
 }
 
-type State ={
+type State = {
   hovered: ?string
 }
 
 class Breadcrumb extends React.Component<Props, State> {
-  context: {theme: Theme};
+  context: { theme: Theme };
   // $FlowFixMe createRef()
   selectedListItem = React.createRef();
 
@@ -65,8 +65,8 @@ class Breadcrumb extends React.Component<Props, State> {
   }
 
   render() {
-    const {theme} = this.context;
-    const {path, selected} = this.props;
+    const { theme } = this.context;
+    const { path, selected } = this.props;
 
     return (
       <ul style={containerStyle(theme)}>

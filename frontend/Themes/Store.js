@@ -10,16 +10,16 @@
  */
 'use strict';
 
-const {deserialize, serialize} = require('./Serializer');
+const { deserialize, serialize } = require('./Serializer');
 const Themes = require('./Themes');
-const {CUSTOM_THEME_NAME} = require('./constants');
-const {get, set} = require('../../utils/storage');
+const { CUSTOM_THEME_NAME } = require('./constants');
+const { get, set } = require('../../utils/storage');
 const Fonts = require('./Fonts');
 
 const LOCAL_STORAGE_CUSTOM_THEME_KEY = 'customTheme';
 const LOCAL_STORAGE_THEME_NAME_KEY = 'themeName';
 
-import type {Theme} from '../types';
+import type { Theme } from '../types';
 
 class Store {
   customTheme: Theme;
@@ -99,7 +99,7 @@ function updateCSSVariables(theme: Theme): void {
 
 function updateFontVariables({ monospace, sansSerif }) {
   // $FlowFixMe
-  const {style} = document.body;
+  const { style } = document.body;
   style.setProperty('--font-family-mono', monospace.family);
   style.setProperty('--font-size-mono-normal', monospace.sizes.normal + 'px');
   style.setProperty('--font-size-mono-large', monospace.sizes.large + 'px');

@@ -10,14 +10,15 @@
  */
 'use strict';
 
-var {EventEmitter} = require('events');
+var { EventEmitter } = require('events');
 
 var assign = require('object-assign');
 var nullthrows = require('nullthrows').default;
 var guid = require('../utils/guid');
 var getIn = require('./getIn');
+var getDisplayName = require('../backend/getDisplayName');
 
-import type {RendererID, DataType, OpaqueNodeHandle, NativeType, Helpers} from '../backend/types';
+import type { RendererID, DataType, OpaqueNodeHandle, NativeType, Helpers } from '../backend/types';
 
 type ElementID = string;
 
@@ -90,12 +91,13 @@ class Agent extends EventEmitter {
   renderers: Map<ElementID, RendererID>;
   elementData: Map<ElementID, DataType>;
   roots: Set<ElementID>;
-  reactInternals: {[key: RendererID]: Helpers};
+  reactInternals: { [key: RendererID]: Helpers };
   _prevSelected: ?NativeType;
   _scrollUpdate: boolean;
-  capabilities: {[key: string]: boolean};
+  capabilities: { [key: string]: boolean };
   _updateScroll: () => void;
   _inspectEnabled: boolean;
+  _parents = new Map()
 
   constructor(global: Object, capabilities?: Object) {
     super();
@@ -169,7 +171,7 @@ class Agent extends EventEmitter {
       this.emit('stopInspecting');
     });
     bridge.on('shutdown', () => this.emit('shutdown'));
-    bridge.on('changeTextContent', ({id, text}) => {
+    bridge.on('changeTextContent', ({ id, text }) => {
       var node = this.getNodeForID(id);
       if (!node) {
         return;
@@ -251,7 +253,7 @@ class Agent extends EventEmitter {
     var data = this.elementData.get(id);
     var node = this.getNodeForID(id);
     if (data && node) {
-      this.emit('highlight', {node, name: data.name, props: data.props});
+      this.emit('highlight', { node, name: data.name, props: data.props });
     }
   }
 
@@ -285,7 +287,7 @@ class Agent extends EventEmitter {
     if (!id) {
       return;
     }
-    this.emit('setSelection', {id, quiet, offsetFromLeaf});
+    this.emit('setSelection', { id, quiet, offsetFromLeaf });
   }
 
   // TODO: remove this method because it's breaking encapsulation.
@@ -298,7 +300,7 @@ class Agent extends EventEmitter {
       console.log('no instance id', instance);
       return;
     }
-    this.emit('setSelection', {id, quiet});
+    this.emit('setSelection', { id, quiet });
   }
 
   getIDForNode(node: Object): ?ElementID {
@@ -311,7 +313,7 @@ class Agent extends EventEmitter {
       try {
         // $FlowFixMe possibly null - it's not null
         component = this.reactInternals[renderer].getReactElementFromNative(node);
-      } catch (e) {}
+      } catch (e) { }
       if (component) {
         return this.getId(component);
       }
@@ -319,7 +321,32 @@ class Agent extends EventEmitter {
     return null;
   }
 
-  _setProps({id, path, value}: {id: ElementID, path: Array<string>, value: any}) {
+  getNamedReactElementFromNative(node: Object): ?Object {
+    // $FlowFixMe
+    var id = this.getIDForNode(node);
+    var path = [];
+    let first = null;
+    while (this._parents.get(id)) {
+      const parentId = this._parents.get(id);
+      let component = null;
+      if (parentId) {
+        component = this.internalInstancesById.get(parentId);
+      }
+      if (!component) {
+        return { component: first, path };
+      }
+      if (!first && component) {
+        first = component;
+      }
+      path.push(component);
+
+      // $FlowFixMe
+      id = parentId;
+    }
+    return { component: first, path };
+  }
+
+  _setProps({ id, path, value }: { id: ElementID, path: Array<string>, value: any }) {
     var data = this.elementData.get(id);
     if (data && data.updater && typeof data.updater.setInProps === 'function') {
       data.updater.setInProps(path, value);
@@ -328,7 +355,7 @@ class Agent extends EventEmitter {
     }
   }
 
-  _setState({id, path, value}: {id: ElementID, path: Array<string>, value: any}) {
+  _setState({ id, path, value }: { id: ElementID, path: Array<string>, value: any }) {
     var data = this.elementData.get(id);
     if (data && data.updater && typeof data.updater.setInState === 'function') {
       data.updater.setInState(path, value);
@@ -337,7 +364,7 @@ class Agent extends EventEmitter {
     }
   }
 
-  _setContext({id, path, value}: {id: ElementID, path: Array<string>, value: any}) {
+  _setContext({ id, path, value }: { id: ElementID, path: Array<string>, value: any }) {
     var data = this.elementData.get(id);
     if (data && data.updater && typeof data.updater.setInContext === 'function') {
       // $FlowFixMe
@@ -347,7 +374,7 @@ class Agent extends EventEmitter {
     }
   }
 
-  _makeGlobal({id, path}: {id: ElementID, path: Array<string>}) {
+  _makeGlobal({ id, path }: { id: ElementID, path: Array<string> }) {
     var data = this.elementData.get(id);
     if (!data) {
       return;
@@ -395,6 +422,12 @@ class Agent extends EventEmitter {
     var send = assign({}, data);
     if (send.children && send.children.map) {
       send.children = send.children.map(c => this.getId(c));
+    }
+    if (data.children && data.children.forEach) {
+      data.children.forEach(child => {
+        const childId = this.getId(child);
+        this._parents = this._parents.set(childId, id);
+      });
     }
     send.id = id;
     send.canUpdate = send.updater && send.updater.canUpdate;
@@ -459,19 +492,25 @@ class Agent extends EventEmitter {
   }
 
   _onClick(event: Event) {
-    if (!this._inspectEnabled) {
-      return;
-    }
+    // if (!this._inspectEnabled) {
+    //   return;
+    // }
 
     var id = this.getIDForNode(event.target);
     if (!id) {
       return;
     }
+    const { component, path } = this.getNamedReactElementFromNative(event.target);
+    if (component && path) {
+      const displayPath = path.map(c => typeof (c.type) === 'function' && getDisplayName(c.type)).filter(n => !!n);
+      console.log(component.type);
+      const filename = component.type.filename;
+      const timestamp = new Date().getTime();
 
-    event.stopPropagation();
-    event.preventDefault();
+      this.emit('elementClicked', { id, displayPath, filename, timestamp });
+    }
 
-    this.emit('setSelection', {id});
+    this.emit('setSelection', { id });
     this.emit('setInspectEnabled', false);
   }
 

@@ -1,7 +1,28 @@
 {
   "plugins": [
-    ["@babel/plugin-transform-flow-strip-types"],
-    ["@babel/plugin-proposal-class-properties", { "loose": false }]
+    [
+      "@babel/plugin-transform-flow-strip-types"
+    ],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": false
+      }
+    ],
+    [
+      "./babel-plugin-add-react-component-paths/transform",
+      {
+        "transforms": [
+          {
+            "transform": "./babel-plugin-add-react-component-paths/add-component-filename"
+          }
+        ]
+      }
+    ]
   ],
-  "presets": ["@babel/preset-env", "@babel/preset-react", "@babel/preset-flow"]
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-flow"
+  ]
 }

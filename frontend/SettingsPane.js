@@ -10,8 +10,8 @@
 'use strict';
 
 import PropTypes from 'prop-types';
-import React, {Component, createRef} from 'react';
-import {findDOMNode} from 'react-dom';
+import React, { Component, createRef } from 'react';
+import { findDOMNode } from 'react-dom';
 import SvgIcon from './SvgIcon';
 import Icons from './Icons';
 import decorate from './decorate';
@@ -26,7 +26,7 @@ type EventLike = {
 
 class SettingsPane extends Component {
   input = createRef();
-  state = {focused: false};
+  state = { focused: false };
 
   componentDidMount() {
     const doc = findDOMNode(this).ownerDocument;
@@ -94,8 +94,8 @@ class SettingsPane extends Component {
             ref={this.input}
             className={styles.Input}
             value={searchText}
-            onFocus={() => this.setState({focused: true})}
-            onBlur={() => this.setState({focused: false})}
+            onFocus={() => this.setState({ focused: true })}
+            onBlur={() => this.setState({ focused: false })}
             onKeyDown={e => this.onKeyDown(e.key)}
             placeholder="Search (text or /regex/)"
             onChange={e => this.props.onChangeSearch(e.target.value)}

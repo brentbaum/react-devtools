@@ -40,7 +40,7 @@ ThemeContext.displayName = 'ThemeContext';
 
 const LocaleContext = React.createContext('en-US');
 
-const {useCallback, useDebugValue, useEffect, useState} = React;
+const { useCallback, useDebugValue, useEffect, useState } = React;
 
 // Below copied from https://usehooks.com/
 function useDebounce(value, delay) {
@@ -48,7 +48,7 @@ function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   // Show the value in DevTools
-  useDebugValue(debouncedValue);
+  // useDebugValue(debouncedValue);
 
   useEffect(
     () => {
@@ -81,7 +81,7 @@ function useNestedOuterHook() {
 const hooksTestProps = {
   string: 'abc',
   number: 123,
-  nestedObject:  {
+  nestedObject: {
     boolean: true,
   },
   nestedArray: ['a', 'b', 'c'],
@@ -111,15 +111,16 @@ const ForwardRefWithHooks = React.forwardRef(FunctionWithHooks);
 
 class Todos extends React.Component {
   ref = React.createRef();
+  customAttribute = 'hello'
 
   constructor(props) {
     super(props);
     this._nextid = 50;
     this.state = {
       todos: [
-        {title: 'Inspect all the things', completed: true, id: 10},
-        {title: 'Profit!!', completed: false, id: 11},
-        {title: 'Profit!!', completed: false, id: 12},
+        { title: 'Inspect all the things', completed: true, id: 10 },
+        { title: 'Profit!!', completed: false, id: 11 },
+        { title: 'Profit!!', completed: false, id: 12 },
       ],
       filter: 'All',
     };
@@ -151,7 +152,7 @@ class Todos extends React.Component {
       return false;
     });
     trace(`Toggle "${text}" ${completed ? 'complete' : 'incomplete'}`, performance.now(), () =>
-      this.setState({todos}));
+      this.setState({ todos }));
   }
 
   sort() {
@@ -163,7 +164,7 @@ class Todos extends React.Component {
       return a.title > b.title ? 1 : -1;
     });
     trace('Sorting items', performance.now(), () =>
-      this.setState({todos}));
+      this.setState({ todos }));
   }
 
   changeFilter(val) {
@@ -201,7 +202,7 @@ class Todos extends React.Component {
 class NewTodo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+    this.state = { text: '' };
   }
 
   shouldComponentUpdate(prevProps, prevState) {
@@ -216,7 +217,7 @@ class NewTodo extends React.Component {
 
   submit() {
     this.props.onAdd(this.state.text);
-    this.setState({text: ''});
+    this.setState({ text: '' });
   }
 
   render() {
@@ -227,7 +228,7 @@ class NewTodo extends React.Component {
           value={this.state.text}
           placeholder="Add new item"
           onKeyDown={e => this.checkEnter(e)}
-          onChange={e => this.setState({text: e.target.value})}
+          onChange={e => this.setState({ text: e.target.value })}
         />
         <ThemeContext.Consumer>
           {theme => (
@@ -238,7 +239,7 @@ class NewTodo extends React.Component {
                 color: theme.primary,
               }}
             >
-              +
+              +!
             </button>
           )}
         </ThemeContext.Consumer>
@@ -248,6 +249,7 @@ class NewTodo extends React.Component {
 }
 
 class TodoItems extends React.Component {
+  custom = true
   render() {
     var filterFn = {
       All: () => true,
@@ -289,14 +291,14 @@ class TodoItem extends React.Component {
 class HoverHighlight extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {hover: false};
+    this.state = { hover: false };
   }
 
   render() {
     return (
       <div
-        onMouseOver={() => this.setState({hover: true})}
-        onMouseOut={() => this.setState({hover: false})}
+        onMouseOver={() => this.setState({ hover: true })}
+        onMouseOut={() => this.setState({ hover: false })}
         style={assign({}, this.props.style, {
           backgroundColor: this.state.hover ? '#eee' : 'transparent',
         })}>
@@ -438,10 +440,10 @@ var complexProps = {
     [3, null],
   ]),
   objMap: new Map([
-    [{ a: 'a'}, true],
-    [{ a: 'a'}, false],
-    [{ b: 'b'}, [1, 2, 3]],
-    [{ c: 'c'}, { k1: 'v1', k2: 'v2' }],
+    [{ a: 'a' }, true],
+    [{ a: 'a' }, false],
+    [{ b: 'b' }, [1, 2, 3]],
+    [{ c: 'c' }, { k1: 'v1', k2: 'v2' }],
   ]),
   nestedObj: {
     a: {
@@ -534,7 +536,7 @@ class Wrap extends React.Component {
           </div>
           {/* for testing highlighing in the presence of multiple scrolls
           {long(long(long()))} {/* */}
-          <Todos/>
+          <Todos />
           <center>
             <button onClick={this.toggleTheme.bind(this)}>Toggle color</button>
           </center>
@@ -558,12 +560,12 @@ class Wrap extends React.Component {
             </div>
           </div>
           <DeeplyNested />
-          <PropTester awesome={2}/>
-          <PropTester {...emptyProps}/>
-          <PropTester {...primitiveProps}/>
-          <PropTester {...complexProps}/>
-          <PropTester {...uninspectableProps}/>
-          <PropTester massiveMap={massiveMap}/>
+          <PropTester awesome={2} />
+          <PropTester {...emptyProps} />
+          <PropTester {...primitiveProps} />
+          <PropTester {...complexProps} />
+          <PropTester {...uninspectableProps} />
+          <PropTester massiveMap={massiveMap} />
         </div>
       </ThemeContext.Provider>
     );
@@ -649,7 +651,7 @@ class ObjectContextType extends React.Component {
     const theme = this.context;
     return (
       <div>
-        Object: <span style={{color: theme.contrast, backgroundColor: theme.primary}}>theme</span>
+        Object: <span style={{ color: theme.contrast, backgroundColor: theme.primary }}>theme</span>
       </div>
     );
   }
@@ -682,7 +684,7 @@ class LegacyContextTypesConsumer extends React.Component {
     const { locale, theme } = this.context;
     return (
       <div>
-        Legacy: {locale}, <span style={{color: theme.contrast, backgroundColor: theme.primary}}>theme</span>
+        Legacy: {locale}, <span style={{ color: theme.contrast, backgroundColor: theme.primary }}>theme</span>
       </div>
     );
   }
@@ -700,7 +702,7 @@ class Target extends React.Component {
   render() {
     if (this.state.num === 1) {
       return (
-        <div onClick={() => this.setState({awesome: !this.state.awesome})}>
+        <div onClick={() => this.setState({ awesome: !this.state.awesome })}>
           {'' + !!this.state.awesome}
         </div>
       );
@@ -708,7 +710,7 @@ class Target extends React.Component {
     var count = this.state.num;
     var children = [];
     for (var i = 0; i < count; i++) {
-      children.push(<Target key={guid()} count={count - 1}/>);
+      children.push(<Target key={guid()} count={count - 1} />);
     }
     return (
       <div style={{

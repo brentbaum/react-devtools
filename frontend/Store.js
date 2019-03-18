@@ -10,8 +10,8 @@
  */
 'use strict';
 
-var {EventEmitter} = require('events');
-var {Map, Set, List} = require('immutable');
+var { EventEmitter } = require('events');
+var { Map, Set, List } = require('immutable');
 var assign = require('object-assign');
 var { copy } = require('clipboard-js');
 var nodeMatchesText = require('./nodeMatchesText');
@@ -20,14 +20,14 @@ var serializePropsForCopy = require('../utils/serializePropsForCopy');
 var invariant = require('./invariant');
 var SearchUtils = require('./SearchUtils');
 var ThemeStore = require('./Themes/Store');
-const {get, set} = require('../utils/storage');
+const { get, set } = require('../utils/storage');
 
 const LOCAL_STORAGE_TRACE_UPDATES_KEY = 'traceUpdates';
 
 import type Bridge from '../agent/Bridge';
-import type {InspectedHooks} from '../backend/types';
-import type {DOMEvent, ElementID, Theme} from './types';
-import type {Snapshot} from '../plugins/Profiler/ProfilerTypes';
+import type { InspectedHooks } from '../backend/types';
+import type { DOMEvent, ElementID, Theme } from './types';
+import type { Snapshot } from '../plugins/Profiler/ProfilerTypes';
 
 type ListenerFunction = () => void;
 type DataType = Map;
@@ -172,7 +172,7 @@ class Store extends EventEmitter {
     this._bridge.on('unmount', id => this._unmountComponent(id));
     this._bridge.on('setInspectEnabled', (data) => this.setInspectEnabled(data));
     this._bridge.on('inspectedHooks', data => this.setInspectedHooks(data));
-    this._bridge.on('select', ({id, quiet, offsetFromLeaf = 0}) => {
+    this._bridge.on('select', ({ id, quiet, offsetFromLeaf = 0 }) => {
       // Backtrack if we want to skip leaf nodes
       while (offsetFromLeaf > 0) {
         offsetFromLeaf--;
@@ -252,7 +252,7 @@ class Store extends EventEmitter {
 
   // TODO(jared): get this working for react native
   changeTextContent(id: ElementID, text: string): void {
-    this._bridge.send('changeTextContent', {id, text});
+    this._bridge.send('changeTextContent', { id, text });
     var node = this._nodes.get(id);
     if (node.get('nodeType') === 'Text') {
       this._nodes = this._nodes.set(id, node.set('text', text));
@@ -360,7 +360,7 @@ class Store extends EventEmitter {
 
   showContextMenu(type: string, evt: DOMEvent, ...args: Array<any>) {
     evt.preventDefault();
-    this.contextMenu = {type, x: evt.pageX, y: evt.pageY, args};
+    this.contextMenu = { type, x: evt.pageX, y: evt.pageY, args };
     this.emit('contextMenu');
   }
 
@@ -431,19 +431,19 @@ class Store extends EventEmitter {
   }
 
   setProps(id: ElementID, path: Array<string>, value: any) {
-    this._bridge.send('setProps', {id, path, value});
+    this._bridge.send('setProps', { id, path, value });
   }
 
   setState(id: ElementID, path: Array<string>, value: any) {
-    this._bridge.send('setState', {id, path, value});
+    this._bridge.send('setState', { id, path, value });
   }
 
   setContext(id: ElementID, path: Array<string>, value: any) {
-    this._bridge.send('setContext', {id, path, value});
+    this._bridge.send('setContext', { id, path, value });
   }
 
   makeGlobal(id: ElementID, path: Array<string>) {
-    this._bridge.send('makeGlobal', {id, path});
+    this._bridge.send('makeGlobal', { id, path });
   }
 
   setHover(id: ElementID, isHovered: boolean, isBottomTag: boolean) {
@@ -564,12 +564,12 @@ class Store extends EventEmitter {
   inspect(id: ElementID, path: Array<string>, cb: () => void) {
     var basePath = path[0];
     invariant(basePath === 'props' || basePath === 'state' || basePath === 'context' || basePath === 'hooksTree',
-              'Inspected path must be one of props, state, or context');
+      'Inspected path must be one of props, state, or context');
     if (basePath === 'hooksTree') {
       this._bridge.inspect('hooksTree', path, value => {
         var base = this.inspectedHooks;
         // $FlowFixMe
-        var inspected: ?{[string]: boolean} = path.reduce((obj, attr) => obj ? obj[attr] : null, base);
+        var inspected: ?{ [string]: boolean } = path.reduce((obj, attr) => obj ? obj[attr] : null, base);
         if (inspected) {
           assign(inspected, value);
           inspected[consts.inspected] = true;
@@ -580,7 +580,7 @@ class Store extends EventEmitter {
       this._bridge.inspect(id, path, value => {
         var base = this.get(id).get(basePath);
         // $FlowFixMe
-        var inspected: ?{[string]: boolean} = path.slice(1).reduce((obj, attr) => obj ? obj[attr] : null, base);
+        var inspected: ?{ [string]: boolean } = path.slice(1).reduce((obj, attr) => obj ? obj[attr] : null, base);
         if (inspected) {
           assign(inspected, value);
           inspected[consts.inspected] = true;
@@ -715,7 +715,7 @@ class Store extends EventEmitter {
               this.searchText.toLowerCase(),
               childID,
               this,
-          )) {
+            )) {
             this.searchRoots = this.searchRoots.push(childID);
             this.emit('searchRoots');
             this.highlightSearch();

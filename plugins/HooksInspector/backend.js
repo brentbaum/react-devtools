@@ -10,9 +10,9 @@
  */
 'use strict';
 
-import {inspectHooksOfFiber} from '../../backend/ReactDebugHooks';
+import { inspectHooksOfFiber } from '../../backend/ReactDebugHooks';
 
-import type {InspectedHooks} from '../../backend/types';
+import type { InspectedHooks } from '../../backend/types';
 import type Agent from '../../agent/Agent';
 import type Bridge from '../../agent/Bridge';
 
@@ -21,6 +21,10 @@ type ElementID = string;
 export default function setupHooksInspector(bridge: Bridge, agent: Agent) {
   let prevHooksTree: InspectedHooks | null = null;
   let selectedID: ElementID | null = null;
+
+  agent.on('elementClicked', (event) => {
+    console.log(event);
+  });
 
   agent.on('selected', (id: ElementID) => {
     selectedID = id;

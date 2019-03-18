@@ -11,6 +11,7 @@
     "babel-eslint": "6",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.4",
+    "babel-plugin-react-transform": "https://github.com/dlong500/babel-plugin-react-transform",
     "child-process-promise": "^2.2.1",
     "classnames": "2.2.1",
     "cli-spinners": "^1.0.0",
